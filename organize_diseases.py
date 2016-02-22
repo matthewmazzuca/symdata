@@ -78,7 +78,7 @@ def final_diseases(read_diseases, read_symptoms, final_write):
 					if currentrow[7] == '':
 						pass
 					else:
-						percentages[currentrow[0]].append(currentrow[7])
+						percentages[currentrow[0]].append([currentrow[6], currentrow[7]])
 
 					if currentrow[8] == '':
 						pass
@@ -135,7 +135,7 @@ def final_diseases(read_diseases, read_symptoms, final_write):
 					if currentrow[7] == '':
 						pass
 					else:
-						percentages[currentrow[0]].append(currentrow[7])
+						percentages[currentrow[0]].append([currentrow[6], currentrow[7]])
 
 					if currentrow[8] == '':
 						pass
@@ -153,18 +153,29 @@ def final_diseases(read_diseases, read_symptoms, final_write):
 
 	f.close()
 	
-	ages, sex, ethnicity = set_percentages(conditions, ages, sex, ethnicity)
+	# ages, sex, ethnicity = set_percentages(conditions, ages, sex, ethnicity)
 	# def print_row(condition, full_symptoms, href, title, other_names, test, meds, symps, \
 				# percentages, attr, freq, ages, sex, ethnicity, age_strings, sex_strings, ethnicity_strings):
-	print len(conditions)
+	# print percentages["Common cold"]
 
 
 	
 	# testing(title, other_names, symps, percentages, test, ages, age_freq, sex, sex_freq, race, race_freq, meds)
+
+
 	with open(final_write, 'w') as f:
+		row = 'title'
+		for s in full_symptoms:
+			row = row + '\t' + s
+
+		row = row + '\n'
+		f.write(row)
+
 		for item in conditions:
 			for i in range(100):
-				f.write(item + '\n')
+				row = print_row(item, full_symptoms, href, title, other_names, test, meds, symps, \
+				percentages, attr, freq, ages, sex, ethnicity, age_strings, sex_strings, ethnicity_strings)
+				f.write(row)
 
 
 	f.close
@@ -238,30 +249,31 @@ def final_diseases(read_diseases, read_symptoms, final_write):
 	# 					+ '\t' + temp_sex_freq + '\t' + temp_race + '\t' + temp_race_freq + '\t' + temp_med + '\n')
 
 
-	conditions = []
-	full_symptoms = []
-	href = {}
-	title = {}
-	other_names = {}
-	test = {}
-	meds = {}
-	symps = {}
-	percentages = {}
-	attr = {}
-	freq = {}
-	ages = {}
-	sex = {}
-	ethnicity = {}
-
-	age_strings = ['< 1 years', '1-4 years', '5-14 years', '15-29 years', \
-					'30-44 years', '45-59 years', '60-74 years', '75+ years']
-	sex_strings = ['Male', 'Female']
-	ethnicity_strings = ['Hispanic', 'Other', 'Black', 'White']
-
 def print_row(condition, full_symptoms, href, title, other_names, test, meds, symps, \
 				percentages, attr, freq, ages, sex, ethnicity, age_strings, sex_strings, ethnicity_strings):
+	
+	row = condition
+	for s in full_symptoms:
+		if s in symps[condition]:
 
-	pass
+			percent = 1
+
+			for item in percentages[condition]:
+				if item[0] == s:
+					percent = float(item[1])
+					break
+
+			row = row + '\t' + str(decision(percent))
+			
+		else:
+			row = row + '\t' + str(-1)
+
+	row = row + '\n'
+	return row
+
+
+		
+
 
 def set_percentages(conditions, ages, sex, ethnicity):
 	for dis in conditions:
